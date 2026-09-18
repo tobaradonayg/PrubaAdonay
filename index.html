@@ -260,14 +260,8 @@
         <button id="langEs" type="button" onclick="cambiarIdioma('es')" class="lang-btn">ES</button>
         <button id="langEn" type="button" onclick="cambiarIdioma('en')" class="lang-btn">EN</button>
       </div>
-      <!-- TODO(FASE 3): sustituir este selector demo por roles reales de Supabase -->
-      <div class="px-1">
-        <p class="slabel text-[10px] font-bold text-slate-500 uppercase mb-1 px-1.5" data-i18n="comun.usuarioDemo">Usuario demo (roles)</p>
-        <select id="selUsuario" onchange="cambiarUsuario(this.value)"
-          class="w-full bg-white/10 text-white text-xs rounded-lg px-2 py-2 outline-none"></select>
-      </div>
+
       <!-- TODO(FASE 2): restaurarDemo() mezcla datos demo con datos reales de la nube. Revisar. -->
-      <button onclick="restaurarDemo()" class="w-full text-[11px] text-slate-500 hover:text-slate-300 transition text-left px-3"><span class="slabel" data-i18n="comun.restaurarDemo">↺ Restaurar datos demo</span></button>
       <button onclick="toggleSidebar()"
         class="hidden lg:flex w-full items-center justify-center gap-2 bg-white/5 hover:bg-white/10 rounded-xl py-2 text-xs font-semibold text-slate-300 transition"><span id="icoToggle" class="text-base">⟨⟨</span><span class="slabel" data-i18n="comun.colapsar">Colapsar menú</span></button>
     </div>
@@ -345,11 +339,9 @@
         <button id="langEnM" type="button" onclick="cambiarIdioma('en')" class="lang-btn">EN</button>
       </div>
       <!-- TODO(FASE 3): sustituir por roles reales -->
-      <div>
-        <p class="text-[10px] font-bold text-slate-500 uppercase mb-1 px-1" data-i18n="comun.usuarioDemoM">Usuario demo (probar roles)</p>
-        <select id="selUsuarioM" onchange="cambiarUsuario(this.value)"
-          class="w-full bg-white/10 text-white text-xs rounded-xl px-3 py-2.5 outline-none"></select>
-      </div>
+      <!-- Cerrar sesión (móvil) — data-i18n lo traduce aplicarIdioma() -->
+      <button onclick="cerrarSesion()" id="btnCerrarSesionM" data-i18n="user.cerrarSesion"
+        class="w-full text-sm font-bold text-rose-400 hover:text-rose-300 bg-white/5 hover:bg-white/10 rounded-xl py-3 transition active:scale-95 text-center">🚪 Cerrar Sesión</button>
       <button onclick="restaurarDemo()" class="w-full text-[11px] text-slate-500 hover:text-slate-300 transition text-left px-1" data-i18n="comun.restaurarDemo">↺ Restaurar datos demo</button>
     </div>
   </div>
@@ -1389,137 +1381,6 @@ var SEM_FILAS = [
 ];
 
 
-/* ───────────────────────────────────────────────────────────────────────────
-   [JS-01b] DATOS SEMILLA (SOLO DEMO) — INTACTOS POR DISEÑO
-   ───────────────────────────────────────────────────────────────────────────
-   Usados únicamente por restaurarDemo(). TODO(FASE 3): eliminar todo este
-   bloque cuando los roles y datos sean 100% reales desde Supabase.
-   I18N: NO se traduce NADA aquí — son DATOS (nombres, notas, estados
-   canónicos 'Completado'/'No asistió', roles 'Admin'...). Los textos demo
-   se muestran igual en ambos idiomas, igual que un registro real de la nube.
-   ─────────────────────────────────────────────────────────────────────────── */
-
-/** Usuarios ficticios para probar los 3 roles sin login real. TODO(FASE 3): eliminar. */
-var USUARIOS_DEMO = [
-  { nombre: 'Ana García',      email: 'ana@demo.com',     rol: 'Admin',       cuadrilla: '' },
-  { nombre: 'Roberto Méndez',  email: 'roberto@demo.com', rol: 'Supervisor',  cuadrilla: 'North Crew 3' },
-  { nombre: 'Luis Hernández',  email: 'luis@demo.com',    rol: 'Trabajador',  cuadrilla: 'North Crew 3' }
-];
-
-/** Notas ficticias para generar historial de servicios demo. */
-var NOTAS_DEMO = [
-  'Acceso cerrado — se reprograma para mañana',
-  'Basura voluminosa junto a contenedores, se reporta al cliente',
-  'Cliente pidió barrido extra en área de carga',
-  'Portón lateral abierto al llegar, se cerró al salir',
-  'Se reemplazó bolsa rota del contenedor principal',
-  'Charco de aceite en zona de tránsito, señalizado'
-];
-
-/** Nombres de operadores ficticios para el historial demo. */
-var OPS_DEMO = ['Ana García', 'Roberto Méndez', 'Luis Hernández', 'Miguel Torres', 'Carlos López'];
-
-/**
- * Propiedades semilla.
- * Formato por fila:
- * [id, nombre, servicio, ciudad, cuadrilla, contratista, dias, ciclo,
- *  patron, costoTipo, costoMonto, visitasMes, estado]
- */
-var SEED = [
-  ['AUS-001', '11000 Middle Fiskville Rd — Porter', 'Porter', 'Austin', '', 'HWC', 'LMXJV', 'Semanal', '', 'Por mes', 950, '', 'Activa'],
-  ['AUS-002', '11000 Middle Fiskville Rd — Sweep', 'Sweep', 'Austin', '', 'HWC', 'LMJV', 'Semanal', '', 'Por mes', 700, '', 'Activa'],
-  ['AUS-003', '7600 Burnet Rd — Sweep', 'Sweep', 'Austin', '', '', 'S', 'Mensual', '1x/month', 'Por vez', 150, 1, 'Activa'],
-  ['AUS-004', 'Anderson Arbor — Porter', 'Porter', 'Austin', '', 'FMS', 'MXV', 'Semanal', '', 'Por mes', 750, '', 'Activa'],
-  ['AUS-005', 'Delwood Shopping Center', 'Sweep', 'Austin', '', '', 'LMXJVSD', 'Semanal', '', 'Por mes', 900, '', 'Activa'],
-  ['AUS-006', 'HEB Store 12 — Riverside — Porter', 'Porter', 'Austin', '', '', 'LMXJVSD', 'Semanal', '', 'Por mes', 950, '', 'Activa'],
-  ['AUS-007', 'Kyle Crossing — Sweep', 'Sweep', 'Austin', '', '', 'LMXJVSD', 'Semanal', '', 'Por mes', 950, '', 'Activa'],
-  ['AUS-008', '8910 Research Blvd — Sweep', 'Sweep', 'Austin', '', '', 'S', 'Trimestral', '1x/quarter', 'Por vez', 180, 1, 'Activa'],
-  ['BEA-001', 'North Park Plaza', 'Sweep', 'Beaumont', '', '', 'LMXJVSD', 'Semanal', '', 'Por mes', 950, '', 'Activa'],
-  ['BEA-002', 'Crossroads Shopping Center', 'Sweep', 'Beaumont', '', '', 'LMXJVSD', 'Semanal', '', 'Por mes', 950, '', 'Activa'],
-  ['BEA-003', 'HEB Store 048 — Dowlen — Porter', 'Porter', 'Beaumont', '', '', 'LX', 'Semanal', '', 'Por mes', 280, '', 'Activa'],
-  ['COL-001', 'Central Station I', 'Sweep', 'College Station', '', '', 'LMXJVSD', 'Semanal', '', 'Por mes', 950, '', 'Activa'],
-  ['COL-002', 'Central Station I — Porter', 'Porter', 'College Station', '', '', 'LMX', 'Semanal', '', 'Por mes', 420, '', 'Activa'],
-  ['COL-003', 'Townshire', 'Sweep', 'College Station', '', '', 'LMXJVSD', 'Semanal', '', 'Por mes', 950, '', 'Activa'],
-  ['DAL-001', 'Gateway Station I & II', 'Sweep', 'Dallas', 'AZ', '', 'LMXJVSD', 'Semanal', '', 'Por mes', 980, '', 'Activa'],
-  ['DAL-002', 'City Line Market (Phase I)', 'Sweep', 'Dallas', 'GB20', '', 'LMJV', 'Semanal', '', 'Por mes', 560, '', 'Activa'],
-  ['DAL-003', 'City Line Market (Phase I) — Porter', 'Porter', 'Dallas', 'AZ', '', 'LX', 'Semanal', '', 'Por mes', 280, '', 'Activa'],
-  ['DAL-004', 'Great Lakes', 'Sweep', 'Dallas', 'AZ', '', '', 'Mensual', '2x/month', 'Por vez', 80, 2, 'Activa'],
-  ['HOU-001', '1200 W. Gray', 'Sweep', 'Houston', 'South Crew 1', '', 'LMV', 'Semanal', '', 'Por mes', 380, '', 'Activa'],
-  ['HOU-002', '24403 Kuykendahl Rd', 'Sweep', 'Houston', 'South Crew 4', '', 'LMJV', 'Semanal', '', 'Por mes', 560, '', 'Activa'],
-  ['HOU-003', '4405 N. Kirkwood', 'Sweep', 'Houston', 'North Crew 9', '', 'LMJV', 'Semanal', '', 'Por mes', 470, '', 'Activa'],
-  ['HOU-004', 'HEB Store 756 — McGregor', 'Sweep', 'Houston', 'North Crew 3', '', 'LMXJV', 'Semanal', '', 'Por mes', 700, '', 'Activa'],
-  ['HOU-005', 'Rice Village — Porter', 'Porter', 'Houston', '', '', 'V', 'Semanal', '', 'Por vez', 180, 4, 'Activa'],
-  ['HOU-006', '2900 N. Sam Houston Pkwy W — Southpoint (Amazon)', 'Sweep', 'Houston', 'Weekend', '', 'S', 'Semanal', '', 'Por mes', 380, '', 'Activa'],
-  ['HOU-007', '1415 W. Mount Houston', 'Sweep', 'Houston', 'North Crew 3', '', 'LXV', 'Semanal', '', 'Por mes', 380, '', 'Activa'],
-  ['SAT-001', 'Alamo Ranch', 'Sweep', 'San Antonio', '', '', 'LMXJVSD', 'Semanal', '', 'Por mes', 950, '', 'Activa']
-];
-
-/** Cuadrillas semilla (formato igual a tabla crews). */
-var CREW_SEED = [
-  { id: 'C-001', nombre: 'North Crew 3', ciudad: 'Houston', color: 'Azul', responsable: 'Miguel Torres', telefono: '(713) 555-0303', notas: 'Cubre zona norte: Mount Houston, McGregor.' },
-  { id: 'C-002', nombre: 'North Crew 9', ciudad: 'Houston', color: 'Azul', responsable: 'Juan Pérez', telefono: '(713) 555-0909', notas: '' },
-  { id: 'C-003', nombre: 'South Crew 1', ciudad: 'Houston', color: 'Negro', responsable: 'Carlos López', telefono: '(713) 555-0101', notas: '' },
-  { id: 'C-004', nombre: 'South Crew 4', ciudad: 'Houston', color: 'Negro', responsable: 'Luis Ramírez', telefono: '(713) 555-0404', notas: '' },
-  { id: 'C-005', nombre: 'Weekend', ciudad: 'Houston', color: 'Gris', responsable: 'Turno fin de semana', telefono: '(713) 555-0000', notas: 'Solo sábados y domingos.' },
-  { id: 'C-006', nombre: 'AZ', ciudad: 'Dallas', color: 'Indigo', responsable: 'Equipo AZ', telefono: '(214) 555-0290', notas: '' },
-  { id: 'C-007', nombre: 'GB20', ciudad: 'Dallas', color: 'Rosa', responsable: 'Equipo GB20', telefono: '(214) 555-0292', notas: '' }
-];
-
-/** Convierte SEED → array de objetos propiedad (formato en memoria). */
-function seedProps() {
-  var arr = SEED.map(function (a) {
-    return { id: a[0], nombre: a[1], servicio: a[2], ciudad: a[3], cuadrilla: a[4], contratista: a[5], dias: a[6], ciclo: a[7], patron: a[8] || '', costoTipo: a[9] || '', costoMonto: a[10] || '', visitasMes: a[11] || '', estado: a[12], fecha: '2026-07-01', gate: '', dump: '', notas: '' };
-  });
-  // Excepciones con datos extra (códigos de acceso, notas)
-  var ex = { 'HOU-005': { gate: '7357' }, 'AUS-008': { notas: 'Servicio trimestral (1x/quarter).' } };
-  arr.forEach(function (p) { if (ex[p.id]) Object.assign(p, ex[p.id]); });
-  return arr;
-}
-
-/** Genera historial de servicios ficticio (determinístico por id de propiedad). */
-function generarServiciosDemo() {
-  var arr = [], n = 0;
-  props.forEach(function (p) {
-    // PRNG determinístico: misma propiedad → mismos servicios en cada demo
-    var seed = 7; for (var i = 0; i < p.id.length; i++) { seed = (seed * 31 + p.id.charCodeAt(i)) | 0; }
-    function rnd(i) { var x = Math.sin(seed + i * 13.37) * 10000; return x - Math.floor(x); }
-    var total = p.ciclo === 'Semanal' ? 6 : (p.ciclo === 'Mensual' ? 3 : 2);
-    var gap = p.ciclo === 'Semanal' ? 4 : (p.ciclo === 'Mensual' ? 14 : 40);
-    for (var i = 0; i < total; i++) {
-      var d = new Date(); d.setDate(d.getDate() - Math.round((total - i) * gap + rnd(i) * 2));
-      var noAsis = rnd(i + 40) > 0.9;
-      var conNota = noAsis || rnd(i + 90) > 0.75;
-      n++;
-      arr.push({
-        id: 'S-' + String(n).padStart(4, '0'), propId: p.id, fecha: fechaISO(d),
-        estado: noAsis ? 'No asistió' : 'Completado', cuadrilla: p.cuadrilla || '',
-        notas: conNota ? NOTAS_DEMO[Math.floor(rnd(i + 120) * NOTAS_DEMO.length)] : '',
-        por: OPS_DEMO[Math.floor(rnd(i + 150) * OPS_DEMO.length)], ts: d.getTime() + 43200000
-      });
-    }
-  });
-  return arr;
-}
-
-/** Genera 2 jornadas de ejemplo (hoy, para North Crew 3 y South Crew 1). */
-function generarJornadasDemo() {
-  var hoy = fechaISO(new Date());
-  var manana = new Date(); manana.setDate(manana.getDate() + 1);
-  var arr = [];
-  var itemsA = ['HOU-004', 'HOU-007'].map(function (id) { return { propId: id, estado: 'Pendiente', servId: null, pospFecha: '', pospMotivo: '', pospPor: '' }; });
-  arr.push({
-    id: 'J-0001', cuadrilla: 'North Crew 3', fecha: hoy, fechaFin: '', nombre: 'Ruta norte — delegada por administración', notas: 'Empezar por McGregor.',
-    creadaPor: 'Ana García', creadaPorRol: 'Admin Oro', items: itemsA, ts: Date.now() - 86400000
-  });
-  var itemsB = ['HOU-001'].map(function (id) { return { propId: id, estado: 'Pendiente', servId: null, pospFecha: '', pospMotivo: '', pospPor: '' }; });
-  arr.push({
-    id: 'J-0002', cuadrilla: 'South Crew 1', fecha: hoy, fechaFin: fechaISO(manana), nombre: 'Ruta W. Gray (turno nocturno)', notas: 'Termina en la madrugada del día siguiente.',
-    creadaPor: 'Luis Hernández', creadaPorRol: 'Trabajador', items: itemsB, ts: Date.now() - 43200000
-  });
-  return arr;
-}
-
-
 /* ═══════════════════════════════════════════════════════════════════════════
    [JS-02] ESTADO GLOBAL
    ───────────────────────────────────────────────────────────────────────────
@@ -1532,8 +1393,9 @@ function generarJornadasDemo() {
    ═══════════════════════════════════════════════════════════════════════════ */
 var props = [], crews = [], servicios = [], jornadas = [], leidos = {};
 
-/** Usuario en sesión (demo). TODO(FASE 3): poblar desde tabla profiles de Supabase. */
-var USUARIO = USUARIOS_DEMO[0];
+/** Usuario en sesión. Se llena en inicializarApp() desde profiles (Supabase).
+ *  rol debe ser canónico: 'Admin' | 'Supervisor' | 'Trabajador'. */
+var USUARIO = { nombre: '', email: '', rol: '', cuadrilla: '' };
 
 /** Estado de la interfaz: idioma, vista activa, filtros y contextos de cada pantalla. */
 var estado = {
@@ -2222,15 +2084,6 @@ function updateUsuarioUI() {
   if ($('uNombre')) $('uNombre').textContent = USUARIO.nombre;
   if ($('mMenuNombre')) $('mMenuNombre').textContent = USUARIO.nombre;
 
-  // Selects demo de rol (se llenan una sola vez; etiqueta con rol traducido)
-  ['selUsuario', 'selUsuarioM'].forEach(function (id) {
-    var s = $(id); if (!s) return;
-    if (s.options.length !== USUARIOS_DEMO.length) {
-      s.innerHTML = USUARIOS_DEMO.map(function (u) { return '<option value="' + esc(u.nombre) + '">' + esc(u.nombre) + ' · ' + esc(td('rol', u.rol)) + '</option>'; }).join('');
-    }
-    s.value = USUARIO.nombre;
-  });
-
   // Inyecta (una sola vez) el botón "Cerrar Sesión" en el pie del sidebar
   var cerrarSesBtn = document.getElementById('btnCerrarSesion');
   if (!cerrarSesBtn && typeof DB !== 'undefined') {
@@ -2246,20 +2099,7 @@ function updateUsuarioUI() {
   }
 }
 
-/** Cambia de rol vía usuarios demo. I18N: toast con rol traducido. */
-function cambiarUsuario(nombre) {
-  for (var i = 0; i < USUARIOS_DEMO.length; i++) {
-    if (USUARIOS_DEMO[i].nombre === nombre) {
-      USUARIO = { nombre: USUARIOS_DEMO[i].nombre, email: USUARIOS_DEMO[i].email, rol: USUARIOS_DEMO[i].rol, cuadrilla: USUARIOS_DEMO[i].cuadrilla };
-      break;
-    }
-  }
-  estado.filtros = { q: '', ciudad: '', servicio: '', cuadrilla: '', estado: '' };
-  estado.repFiltros = { periodo: 'hoy', cuadrilla: '', estadoF: '', lectura: 'pendientes' };
-  estado.rutaFiltros = { periodo: 'semana', cuadrilla: '' };
-  save(); cerrarMenu(); ir('dashboard');
-  toast(tf('user.ahoraEres', { nombre: esc(USUARIO.nombre), rol: esc(td('rol', USUARIO.rol)) }));
-}
+/** Cambia de rol vía usuarios demo. I18N: toast con rol traducido. YA NO SE OCUPA ESTA FUNCION */
 
 /** Contador de reportes sin leer en los 3 badges (solo admins). */
 function actualizarBadgeRep() {
@@ -4115,28 +3955,8 @@ async function abrirDel(tipo, id) {
   }
 }
 
-/* ── 16.h RESTAURAR DEMO ── */
-async function restaurarDemo() {
-  var ok = await confirmarModal({
-    tipo: 'warn',
-    titulo: t('demo.titulo'),
-    mensaje: t('demo.mensaje'),
-    textoOk: t('comun.siRestaurar'),
-    textoCancelar: t('comun.cancelar')
-  });
-  if (!ok) return;
-  props = seedProps();
-  crews = JSON.parse(JSON.stringify(CREW_SEED));
-  servicios = generarServiciosDemo();
-  jornadas = generarJornadasDemo();
-  leidos = {};
-  estado.vista = 'dashboard'; estado.param = null; estado.history = [];
-  estado.filtros = { q: '', ciudad: '', servicio: '', cuadrilla: '', estado: '' };
-  estado.repFiltros = { periodo: 'hoy', cuadrilla: '', estadoF: '', lectura: 'pendientes' };
-  estado.rutaFiltros = { periodo: 'semana', cuadrilla: '' };
-  cerrarMenu(); renderApp();
-  toast(t('toast.demo'));
-}
+/* ── 16.h RESTAURAR DEMO YA NO SE USA ESTA FUNCION ── */
+
 
 /* ── 16.i ELIMINAR SERVICIO DEL HISTORIAL (solo admins) ── */
 async function abrirDelServicio(sid) {
